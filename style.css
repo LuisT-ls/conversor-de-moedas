@@ -315,6 +315,37 @@ button {
   }
 }
 
+.footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+  border-top: 1px solid var(--light-text);
+  transition: var(--transition);
+}
+
+body.light-mode .footer {
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  border-top: 1px solid var(--dark-text);
+}
+
+.footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.footer a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
 /* Responsive styles */
 @media (max-width: 640px) {
   .container {
