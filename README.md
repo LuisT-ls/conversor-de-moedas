@@ -12,10 +12,10 @@ Um aplicativo simples e intuitivo para converter valores entre diferentes moedas
 ## 🖼️ Interface
 
 ### Tema Escuro
-![Captura de tela do tema escuro](dark-theme-screenshot.png)
+![Captura de tela do tema escuro](/img/dark-theme-screenshot.png.png)
 
 ### Tema Claro
-![Captura de tela do tema claro](light-theme-screenshot.png)
+![Captura de tela do tema claro](/img/light-theme-screenshot.png.png)
 
 ## 🚀 Tecnologias Utilizadas
 
