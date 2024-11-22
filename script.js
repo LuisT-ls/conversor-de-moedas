@@ -57,7 +57,7 @@ async function detectUserLocation() {
     // Add flags to the interface
     addFlagsToInterface()
 
-    // Set default currencies (USD to local currency)
+    // Set default currencies
     setDefaultCurrencies()
 
     // Update interface with location info
@@ -126,7 +126,7 @@ function updateFlags() {
   toContainer.innerHTML = `<img src="${FLAG_API_URL}/${userLocation.flag}.png" alt="${userLocation.currency} Flag" class="currency-flag">`
 }
 
-// Set default currencies
+// Set default currencies (USD to detected currency)
 function setDefaultCurrencies() {
   elements.fromCurrency.value = 'USD'
   elements.toCurrency.value = userLocation.currency
@@ -167,19 +167,30 @@ async function loadCurrencies() {
   }
 }
 
-// Populate currency selects
+// Populate currency selects with USD fixed as 'from' currency
 function populateCurrencySelects(currencies) {
-  elements.fromCurrency.innerHTML = ''
-  elements.toCurrency.innerHTML = ''
+  // Sort currencies by code
+  currencies.sort((a, b) => a[0].localeCompare(b[0]))
 
+  // From currency (USD only)
+  elements.fromCurrency.innerHTML = ''
+  const usdOption = document.createElement('option')
+  usdOption.value = 'USD'
+  usdOption.textContent = 'USD - United States Dollar'
+  elements.fromCurrency.appendChild(usdOption)
+  elements.fromCurrency.disabled = true // Disable changing from currency
+
+  // To currency (all options)
+  elements.toCurrency.innerHTML = ''
   currencies.forEach(([code, name]) => {
     const option = document.createElement('option')
     option.value = code
     option.textContent = `${code} - ${name}`
-
-    elements.fromCurrency.appendChild(option.cloneNode(true))
-    elements.toCurrency.appendChild(option.cloneNode(true))
+    elements.toCurrency.appendChild(option)
   })
+
+  // Set default values
+  setDefaultCurrencies()
 }
 
 // Event Listeners
@@ -366,6 +377,7 @@ function swapCurrencies() {
   elements.toCurrency.value = temp
   updateFlags()
   if (elements.amountInput.value) performConversion()
+  showError('USD está fixo como moeda de origem')
 }
 
 // Initialize app when DOM is loaded
