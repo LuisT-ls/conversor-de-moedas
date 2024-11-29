@@ -16,16 +16,49 @@ const CONFIG = {
   }
 }
 
+// Lista de países que usam euro
+const EURO_COUNTRIES = [
+  'Austria',
+  'Belgium',
+  'Cyprus',
+  'Estonia',
+  'Finland',
+  'France',
+  'Germany',
+  'Greece',
+  'Ireland',
+  'Italy',
+  'Latvia',
+  'Lithuania',
+  'Luxembourg',
+  'Malta',
+  'Netherlands',
+  'Portugal',
+  'Slovakia',
+  'Slovenia',
+  'Spain'
+]
+
 // Serviço de Localização
 class LocationService {
   async detectLocation() {
     try {
       const response = await fetch(CONFIG.API.LOCATION_URL)
       const data = await response.json()
+
+      let defaultCurrency = 'BRL'
+      let defaultFlag = 'br'
+
+      // Verificar se o país usa euro
+      if (EURO_COUNTRIES.includes(data.country_name)) {
+        defaultCurrency = 'EUR'
+        defaultFlag = 'eu'
+      }
+
       return {
         country: data.country_name || 'Brasil',
-        currency: data.currency || 'BRL',
-        flag: (data.country_code || 'br').toLowerCase()
+        currency: data.currency || defaultCurrency,
+        flag: (data.country_code || defaultFlag).toLowerCase()
       }
     } catch (error) {
       console.error('Erro na detecção de localização:', error)
@@ -231,13 +264,17 @@ class CurrencyConverter {
   populateCurrencySelects(currencies) {
     currencies.sort((a, b) => a[0].localeCompare(b[0]))
 
-    // Moeda de origem (apenas USD)
+    // Moeda de origem (permitir todas as moedas)
     this.elements.fromCurrency.innerHTML = ''
-    const usdOption = document.createElement('option')
-    usdOption.value = 'USD'
-    usdOption.textContent = 'USD - United States Dollar'
-    this.elements.fromCurrency.appendChild(usdOption)
-    this.elements.fromCurrency.disabled = true
+    currencies.forEach(([code, name]) => {
+      const option = document.createElement('option')
+      option.value = code
+      option.textContent = `${code} - ${name}`
+      this.elements.fromCurrency.appendChild(option)
+    })
+
+    // Definir USD como padrão
+    this.elements.fromCurrency.value = 'USD'
 
     // Moeda de destino (todas as opções)
     this.elements.toCurrency.innerHTML = ''
