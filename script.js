@@ -191,20 +191,52 @@ class CurrencyConverter {
     )
   }
 
+  static CURRENCY_TO_COUNTRY_MAP = {
+    USD: 'us',
+    EUR: 'eu',
+    BRL: 'br',
+    GBP: 'gb',
+    JPY: 'jp',
+    CAD: 'ca',
+    AUD: 'au',
+    CHF: 'ch',
+    CNY: 'cn',
+    INR: 'in',
+    KRW: 'kr',
+    MXN: 'mx',
+    RUB: 'ru',
+    TRY: 'tr',
+    ZAR: 'za'
+  }
+
   // Atualizar bandeiras
   updateFlags() {
     const fromContainer = document.getElementById('from-flag-container')
     const toContainer = document.getElementById('to-flag-container')
 
+    // Obter os códigos de moeda selecionados
+    const fromCurrency = this.elements.fromCurrency.value
+    const toCurrency = this.elements.toCurrency.value
+
+    // Função para obter o código da bandeira
+    const getFlagCode = currency => {
+      // Se existir um mapeamento, use-o
+      if (CurrencyConverter.CURRENCY_TO_COUNTRY_MAP[currency]) {
+        return CurrencyConverter.CURRENCY_TO_COUNTRY_MAP[currency]
+      }
+
+      return currency.slice(0, 2).toLowerCase()
+    }
+
     fromContainer.innerHTML = `
-      <img src="${CONFIG.API.FLAG_URL}/us.png" 
-           alt="Bandeira USD" 
+      <img src="${CONFIG.API.FLAG_URL}/${getFlagCode(fromCurrency)}.png" 
+           alt="Bandeira ${fromCurrency}" 
            class="currency-flag"
       >
     `
     toContainer.innerHTML = `
-      <img src="${CONFIG.API.FLAG_URL}/${this.userLocation.flag}.png" 
-           alt="Bandeira ${this.userLocation.currency}" 
+      <img src="${CONFIG.API.FLAG_URL}/${getFlagCode(toCurrency)}.png" 
+           alt="Bandeira ${toCurrency}" 
            class="currency-flag"
       >
     `
@@ -229,13 +261,13 @@ class CurrencyConverter {
       if (e.key === 'Enter') this.performConversion()
     })
 
-    // Eventos de seleção de moeda
-    this.elements.fromCurrency.addEventListener('change', () =>
+    // Eventos de seleção de moeda - adicionar chamada para updateFlags
+    this.elements.fromCurrency.addEventListener('change', () => {
       this.updateFlags()
-    )
-    this.elements.toCurrency.addEventListener('change', () =>
+    })
+    this.elements.toCurrency.addEventListener('change', () => {
       this.updateFlags()
-    )
+    })
   }
 
   // Atualizar informações de localização
@@ -342,15 +374,25 @@ class CurrencyConverter {
     const formattedAmount = this.formatCurrency(amount, fromCurrency)
     const formattedResult = this.formatCurrency(result, toCurrency)
 
+    // Função para obter o código da bandeira
+    const getFlagCode = currency => {
+      if (CurrencyConverter.CURRENCY_TO_COUNTRY_MAP[currency]) {
+        return CurrencyConverter.CURRENCY_TO_COUNTRY_MAP[currency]
+      }
+      return currency.slice(0, 2).toLowerCase()
+    }
+
     this.elements.resultText.innerHTML = `
       <div class="conversion-result">
         <div class="from-amount">
-          <img src="${CONFIG.API.FLAG_URL}/us.png" alt="USD" class="result-flag">
+          <img src="${CONFIG.API.FLAG_URL}/${getFlagCode(fromCurrency)}.png" 
+               alt="${fromCurrency}" 
+               class="result-flag">
           ${formattedAmount}
         </div>
         <div class="result-arrow">➜</div>
         <div class="to-amount">
-          <img src="${CONFIG.API.FLAG_URL}/${this.userLocation.flag}.png" 
+          <img src="${CONFIG.API.FLAG_URL}/${getFlagCode(toCurrency)}.png" 
                alt="${toCurrency}" 
                class="result-flag">
           ${formattedResult}
@@ -422,14 +464,26 @@ class CurrencyConverter {
 
     const date = new Date(conversion.timestamp).toLocaleString('pt-BR')
 
+    // Função para obter o código da bandeira
+    const getFlagCode = currency => {
+      if (CurrencyConverter.CURRENCY_TO_COUNTRY_MAP[currency]) {
+        return CurrencyConverter.CURRENCY_TO_COUNTRY_MAP[currency]
+      }
+      return currency.slice(0, 2).toLowerCase()
+    }
+
     div.innerHTML = `
       <div class="history-conversion">
         <div class="conversion-details">
-          <img src="${CONFIG.API.FLAG_URL}/us.png" 
-               alt="USD" 
+          <img src="${CONFIG.API.FLAG_URL}/${getFlagCode(
+      conversion.fromCurrency
+    )}.png" 
+               alt="${conversion.fromCurrency}" 
                class="history-flag">
           ${formattedAmount} ➜
-          <img src="${CONFIG.API.FLAG_URL}/${this.userLocation.flag}.png" 
+          <img src="${CONFIG.API.FLAG_URL}/${getFlagCode(
+      conversion.toCurrency
+    )}.png" 
                alt="${conversion.toCurrency}" 
                class="history-flag">
           ${formattedResult}
